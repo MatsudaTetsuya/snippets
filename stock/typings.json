@@ -1,4 +1,7 @@
 {
   "name": "stock",
-  "dependencies": {}
+  "dependencies": {},
+  "devDependencies": {
+    "d3": "registry:npm/d3#3.0.0+20160723033700"
+  }
 }

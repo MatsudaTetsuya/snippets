@@ -1,0 +1,17 @@
+.chart-division-line {
+    stroke: lightgrey;
+}
+
+.chart-candle-line {
+    stroke: black;
+}
+
+.chart-candle-up {
+    fill: red;
+    stroke: black;
+}
+
+.chart-candle-down {
+    fill: lime;
+    stroke: black;
+}
