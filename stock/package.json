@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "build": "tsc && babel index.js -o index.js && webpack index.js stock.js --optimize-minimize"
+    "build": "tsc && babel index.js -o index.js && babel data.js -o data.js && webpack index.js stock.js --optimize-minimize"
   },
   "author": "Matsuda Tetsuya",
   "license": "ISC",

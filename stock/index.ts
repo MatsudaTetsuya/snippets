@@ -15,6 +15,7 @@
  */
 
 import * as d3 from "d3";
+import ranges from "./data";
 
 const yqlUrl = "https://query.yahooapis.com/v1/public/yql";
 const yqlTable = "yahoo.finance.historicaldata";
@@ -82,7 +83,7 @@ d3.select(window).on("resize", (): void => {
 function drawChart(candles: Candle[]): void {
     const candleSpan: number = 30 * width / viewWidth;
 
-    const candleCount = Math.round(width * 0.88 / candleSpan);
+    const candleCount = Math.round(width * 0.88 / candleSpan) + 1;
 
     if (candles.length < candleCount) {
         return;
@@ -102,13 +103,13 @@ function drawChart(candles: Candle[]): void {
         return [average - 9 * sdev, average + 9 * sdev];
     })();
 
-    const candleMax: Candle = candles
+    const candleMax: Candle = candles.slice(1)
         .filter((candle: Candle): boolean =>
             priceMin < candle.high && candle.high < priceMax)
         .reduce((lhs: Candle, rhs: Candle): Candle =>
             lhs.high > rhs.high ? lhs : rhs);
 
-    const candleMin: Candle = candles
+    const candleMin: Candle = candles.slice(1)
         .filter((candle: Candle): boolean =>
             priceMin < candle.low && candle.low < priceMax)
         .reduce((lhs: Candle, rhs: Candle): Candle =>
@@ -168,8 +169,10 @@ function drawChart(candles: Candle[]): void {
     })();
 
     const root: d3.Selection<any> = svg.append("g")
+        .attr("transform", "translate(0.5, 0.5)")
+        .append("g")
         .attr("class", `${viewId}-root`)
-        .attr("transform", "translate(0.5, 0.5)");
+        .attr("transform", `translate(-${Math.round(candleSpan)}, 0)`);
 
     const priceScales: d3.Selection<any> = root.append("g")
         .attr("transform", (): string => {
@@ -244,6 +247,25 @@ function drawChart(candles: Candle[]): void {
                 candleMax.high / priceRatio + height * 0.15);
             return `translate(${x}, ${y}) `
         });
+
+    function formatDate(date: Date): string {
+        return date.toISOString().substring(0, 10);
+    }
+
+    const area = d3.svg.area<Candle>()
+        .x((candle: Candle, index: number): number =>
+            Math.round(index * candleSpan))
+        .y0((candle: Candle): number =>
+            -Math.round(ranges.get(formatDate(candle.date))[0] / priceRatio))
+        .y1((candle: Candle): number =>
+            -Math.round(ranges.get(formatDate(candle.date))[1] / priceRatio))
+        .defined((candle: Candle): boolean =>
+            ranges.has(formatDate(candle.date)));
+
+    graph.append("path")
+        .attr("class", `${viewId}-ribbon`)
+        .datum(candles)
+        .attr("d", area);
 
     const plots: d3.Selection<any> = graph.selectAll(`.${viewId}-candle`)
         .data(candles)

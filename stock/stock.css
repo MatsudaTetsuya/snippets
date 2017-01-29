@@ -2,6 +2,11 @@
     stroke: lightgrey;
 }
 
+.chart-ribbon {
+    fill: lightblue;
+    fill-opacity: 0.5
+}
+
 .chart-candle-line {
     stroke: black;
 }
