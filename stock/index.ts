@@ -116,7 +116,7 @@ function drawChart(candles: Candle[]): void {
 
     const priceRatio: number = (candleMax.high - candleMin.low) / 0.6 / height;
 
-    const priceSpan: number = [100, 200, 500, 1000].reduce(
+    const priceSpan: number = [100, 200, 300, 400, 500, 1000].reduce(
         (lhs: number, rhs: number): number => {
             let span: number = (candleMax.high - candleMin.low) / 5;
             return Math.abs(lhs - span) < Math.abs(rhs - span) ? lhs : rhs;
@@ -251,13 +251,13 @@ function drawChart(candles: Candle[]): void {
         .append("g")
         .attr("class", `${viewId}-candle`)
         .attr("transform", (candle: Candle, index: number): string =>
-            `translate(${Math.round(index * candleSpan)}, 0) `
+            `translate(${Math.round(index * candleSpan)}, 0)`
         );
 
     plots.filter(
         (candle: Candle): boolean =>
-            candleMin.low < candle.high && candle.high < candleMax.high &&
-            candleMin.low < candle.low && candle.low < candleMax.high)
+            candleMin.low <= candle.high && candle.high <= candleMax.high &&
+            candleMin.low <= candle.low && candle.low <= candleMax.high)
         .append("line")
         .attr("class", `${viewId}-candle-line`)
         .attr("x1", 0)
@@ -269,8 +269,8 @@ function drawChart(candles: Candle[]): void {
 
     plots.filter(
         (candle: Candle): boolean =>
-            candleMin.low < candle.open && candle.open < candleMax.high &&
-            candleMin.low < candle.close && candle.close < candleMax.high)
+            candleMin.low <= candle.open && candle.open <= candleMax.high &&
+            candleMin.low <= candle.close && candle.close <= candleMax.high)
         .append("rect")
         .attr("class", (candle: Candle): string =>
             `${viewId}-candle-${candle.close > candle.open ? "up" : "down"}`
